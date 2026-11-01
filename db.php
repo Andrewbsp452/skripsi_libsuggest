@@ -20,7 +20,7 @@ define('DB_CHARSET', 'utf8mb4');
 // ──────────────────────────────────────────────
 // Daftar gratis di: https://console.cloud.google.com/
 // Enable "Books API" lalu buat API Key
-define('GOOGLE_BOOKS_API_KEY', 'AIzaSyCjPCiWNaKWJoHv_jDKxy7NUO14Ag-vyHQ');
+define('GOOGLE_BOOKS_API_KEY', '');
 
 // ──────────────────────────────────────────────
 // KONEKSI PDO (Singleton)
