@@ -655,6 +655,63 @@ button { font-family: var(--font); cursor: pointer; }
   flex-wrap: wrap; gap: 10px;
 }
 .table-title { font-size: 14px; font-weight: 600; }
+.dashboard-layout {
+  display: grid; grid-template-columns: minmax(220px, 250px) minmax(0, 1fr);
+  align-items: start; gap: 18px; margin-bottom: 28px;
+}
+.dashboard-catalog {
+  position: sticky; top: 76px; min-width: 0; max-height: calc(100vh - 96px);
+  display: flex; flex-direction: column; overflow: hidden;
+  background: var(--white); border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg); box-shadow: 0 2px 8px rgba(44,95,141,0.06);
+}
+.catalog-heading {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 8px; padding: 16px 14px 12px;
+}
+.catalog-heading .form-hint { line-height: 1.45; }
+.catalog-count {
+  min-width: 26px; height: 26px; padding: 0 7px; display: inline-flex;
+  align-items: center; justify-content: center; border-radius: 999px;
+  background: var(--primary-light); color: var(--primary); font-size: 12px; font-weight: 700;
+}
+.catalog-filters { display: flex; gap: 5px; padding: 0 12px 12px; }
+.catalog-filter {
+  flex: 1; padding: 6px 5px; border: 1px solid var(--gray-200);
+  border-radius: 999px; background: var(--white); color: var(--gray-600);
+  font-size: 11px; transition: all var(--transition);
+}
+.catalog-filter.active { border-color: var(--primary); background: var(--primary); color: var(--white); }
+.dashboard-catalog-list { overflow-y: auto; overscroll-behavior: contain; }
+.catalog-book {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 11px 12px; border-top: 1px solid var(--gray-100);
+}
+.catalog-cover {
+  width: 38px; height: 52px; flex: 0 0 38px; object-fit: cover;
+  border-radius: 4px; background: var(--gray-100);
+}
+.catalog-cover-empty { display: flex; align-items: center; justify-content: center; font-size: 19px; }
+.catalog-book-info { min-width: 0; flex: 1; }
+.catalog-book-info h3 {
+  overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+  color: var(--gray-800); font-size: 12px; font-weight: 600;
+}
+.catalog-book-info > p {
+  overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+  margin: 3px 0 7px; color: var(--gray-400); font-size: 10px;
+}
+.catalog-book-meta { display: flex; align-items: center; justify-content: space-between; gap: 4px; }
+.catalog-book-meta .badge { padding: 2px 7px; font-size: 9px; }
+.catalog-book-meta > span:last-child { color: var(--gray-400); font-size: 10px; white-space: nowrap; }
+.catalog-empty { padding: 18px 14px; color: var(--gray-400); font-size: 12px; line-height: 1.5; text-align: center; }
+.catalog-footnote {
+  padding: 10px 12px; border-top: 1px solid var(--gray-100);
+  color: var(--gray-400); font-size: 10px; line-height: 1.45;
+}
+.dashboard-main { min-width: 0; }
+.dashboard-main .metrics-row { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.dashboard-main .table-wrap { overflow-x: auto; }
 .toolbar-filters { display: flex; gap: 8px; }
 .filter-select {
   padding: 6px 10px; border: 1px solid var(--gray-200);
@@ -708,6 +765,11 @@ tbody tr:hover td { background: var(--gray-50); }
 .empty-state .icon { font-size: 40px; margin-bottom: 12px; }
 .empty-state p { font-size: 14px; }
 
+@media (max-width: 900px) {
+  .dashboard-layout { grid-template-columns: minmax(205px, 230px) minmax(0, 1fr); gap: 12px; }
+  .dashboard-main .metrics-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
 /* ── Skeleton loading ── */
 .skeleton { animation: shimmer 1.5s infinite; }
 .skeleton-box {
@@ -739,6 +801,10 @@ tbody tr:hover td { background: var(--gray-50); }
   .topbar-nav  { display: none; }
   .book-grid   { grid-template-columns: repeat(2, 1fr); }
   .metrics-row { grid-template-columns: repeat(2, 1fr); }
+  .dashboard-layout { grid-template-columns: minmax(0, 1fr); }
+  .dashboard-catalog { position: static; max-height: 360px; }
+  .dashboard-main .metrics-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .dashboard-main table { min-width: 660px; }
   .brand-sub   { display: none; }
   .user-info   { display: none; }
   .modal-detail-grid { grid-template-columns: 1fr; }

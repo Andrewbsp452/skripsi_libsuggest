@@ -805,6 +805,8 @@ function initDashboardPage() {
   const tbody        = document.getElementById('dashboard-tbody');
   const filterStatus = document.getElementById('filter-status');
   const filterSort   = document.getElementById('filter-sort');
+  const catalogList  = document.getElementById('dashboard-catalog-list');
+  const catalogCount = document.getElementById('catalog-count');
   const rejectionBackdrop = document.getElementById('rejection-modal-backdrop');
   const rejectionForm = document.getElementById('rejection-form');
   const rejectionCategory = document.getElementById('rejection-category');
@@ -821,6 +823,8 @@ function initDashboardPage() {
   const colSpan = isPetugas ? 6 : 5;
   let rejectionCategories = null;
   let rejectionContext = null;
+  let catalogBooks = [];
+  let catalogStatus = 'all';
 
   function closeRejectionModal() {
     rejectionBackdrop?.classList.remove('open');
@@ -888,6 +892,66 @@ function initDashboardPage() {
     } finally {
       rejectionSubmit.disabled = false;
     }
+  });
+
+  async function loadCatalog() {
+    if (!catalogList) return;
+    try {
+      const data = await apiGet('api/dashboard.php?action=catalog');
+      catalogBooks = data.books || [];
+      renderCatalog();
+    } catch (error) {
+      catalogList.innerHTML = `<p class="chat-error">${escHtml(error.message || 'Katalog gagal dimuat')}</p>`;
+    }
+  }
+
+  function renderCatalog() {
+    const visibleBooks = catalogStatus === 'all'
+      ? catalogBooks
+      : catalogBooks.filter(book => book.status_proposal === catalogStatus);
+
+    if (catalogCount) catalogCount.textContent = visibleBooks.length;
+    if (!visibleBooks.length) {
+      const message = catalogStatus === 'all'
+        ? 'Belum ada buku dibeli atau ditolak dalam semester ini.'
+        : `Belum ada buku berstatus ${labelStatus(catalogStatus)}.`;
+      catalogList.innerHTML = `<p class="catalog-empty">${message}</p>`;
+      return;
+    }
+
+    catalogList.innerHTML = visibleBooks.map(book => {
+      const authors = Array.isArray(book.authors) ? book.authors.join(', ') : '';
+      const cover = book.cover_url
+        ? `<img class="catalog-cover" src="${escHtml(book.cover_url)}" alt="" loading="lazy">`
+        : '<span class="catalog-cover catalog-cover-empty" aria-hidden="true">📚</span>';
+      const statusClass = book.status_proposal === 'dibeli' ? 'badge-dibeli' : 'badge-ditolak';
+      const statusLabel = book.status_proposal === 'dibeli' ? 'Dibeli' : 'Ditolak';
+      const date = book.status_changed_at
+        ? new Date(book.status_changed_at.replace(' ', 'T')).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })
+        : '';
+      return `
+        <article class="catalog-book">
+          ${cover}
+          <div class="catalog-book-info">
+            <h3 title="${escHtml(book.title)}">${escHtml(book.title)}</h3>
+            <p>${escHtml([authors, book.publisher].filter(Boolean).join(' · ') || 'Detail buku tidak tersedia')}</p>
+            <div class="catalog-book-meta">
+              <span class="badge ${statusClass}">${statusLabel}</span>
+              <span>${escHtml(date)}</span>
+            </div>
+          </div>
+        </article>`;
+    }).join('');
+  }
+
+  document.querySelectorAll('[data-catalog-status]').forEach(button => {
+    button.addEventListener('click', () => {
+      catalogStatus = button.dataset.catalogStatus;
+      document.querySelectorAll('[data-catalog-status]').forEach(filter => {
+        filter.classList.toggle('active', filter === button);
+      });
+      renderCatalog();
+    });
   });
 
   async function load() {
@@ -1004,6 +1068,7 @@ function initDashboardPage() {
         const elA = document.getElementById('m-disetujui');
         if (elA) elA.textContent = parseInt(elA.textContent) + 1;
       }
+      await Promise.all([load(), loadCatalog()]);
       return true;
     } catch (err) {
       Toast.error(err.message);
@@ -1014,6 +1079,7 @@ function initDashboardPage() {
   filterStatus?.addEventListener('change', load);
   filterSort?.addEventListener('change', load);
 
+  loadCatalog();
   load();
 }
 
